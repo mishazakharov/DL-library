@@ -1,5 +1,6 @@
 import numpy as np
 import nn
+import loss
 
 class Dense(object):
     ''' Dense layer. It just computes weighted summ of inputs
@@ -22,7 +23,7 @@ class Dense(object):
             pass
         self.weights_initializer = np.ones((units,self.input_tensor.shape[1]))
         # Place to hold our gradients for backpropagation
-        self.grad = np.empty(self.weights_initializer.shape) 
+        self.grad = np.ones(self.weights_initializer.shape) 
         # Linear output(before passing it through activation function!)
         self.output = np.empty((self.input_tensor.shape[0],units,1)) 
         self.activation_output = np.empty((self.input_tensor.shape[0],
@@ -58,7 +59,7 @@ class Dense(object):
                 new.append(result)
             self.output[i] = np.array(new).reshape(-1,1)
         # Reshaping output in the right form. it must be a tensor!
-        self.output = self.output.reshape(self.input_tensor.shape[0],units,1)
+        self.output = self.output.reshape(self.input_tensor.shape[0],self.units,1)
         # Here our tensor have already passed weighted summation
         # Now we need to pass it through activation function
         if self.activation_function == '':
@@ -78,7 +79,7 @@ class Dense(object):
             return self.activation_output
         return None
 
-    def backward(self,gradient=None,actual=None):
+    def backward(self,i,gradient=None,actual=None):
         ''' 
         --
         [i] means that i am extracting ith object from tensor due to 
@@ -106,22 +107,49 @@ class Dense(object):
         '''
         error = gradient
         # If this layer is the last layer in neural network:
-        if not error:
-            loss_function = MSE()
+        if not isinstance(error,np.ndarray):
+            loss_function = loss.MSE()
             # Gradient of loss function with respect to its output
             error = loss_function.grad(self.activation_output[i],actual[i])
         # Now we need to calculate gradient of loss function with respect
         # to the weights and store it in self.grad and use it in
         # GRADIENT DESCENT TO UPDATE WEIGHTS OF THIS LAYER!!!!!
-        self.grad = (error * 
-                self.activation_function(self.output[i],derivative=True) * 
-                self.input_tensor[i])
+        print(error,'This is our error')
+        print(self.activation_function(self.output[i],derivative=True),'This is AFOD')
+        print(self.input_tensor[i],'This is input tensor ith sample!')
+        self.grad = (np.dot(error, 
+                self.activation_function(self.output[i],derivative=True)) * 
+                self.input_tensor[i].T)
         # Now we need to calculate gradient of loss function with respect
         # to inputs and pass it to previous layer as a gradient of loss 
         # function with respect to its outputs!
-        gradients_inputs = (error * 
-                self.activation_function(self.output[i],derivative=True) * 
+        gradients_inputs = (np.dot(error, 
+                self.activation_function(self.output[i],derivative=True)) * 
                 self.weights_initializer)
         # Passing it to previous layer
         return gradients_inputs
         
+    def forward_random(self,new_input_tensor):
+        '''
+        Does forward propagation on a new tensor
+        Will change it later
+        '''
+        new_result = np.empty((new_input_tensor.shape[0],self.units,1))
+        for i,sample in enumerate(new_input_tensor):
+            new = []
+            for b,row in enumerate(self.weights_initializer):
+                result = np.dot(sample.T,row)
+                new.append(result)
+            new_result[i] = np.array(new).reshape(-1,1)
+        new_result = new_result.reshape(new_input_tensor.shape[0],self.units,1)
+        if self.activation_function == '':
+            new_result_activation = new_result
+        else:
+            new_result_activation = self.activation_function(new_result)
+
+        if self.activation_function == '':
+            return new_result
+        else:
+            return new_result_activation
+        return None
+
