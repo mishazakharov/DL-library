@@ -23,7 +23,7 @@ class Dense(object):
             pass
         self.weights_initializer = np.ones((units,self.input_tensor.shape[1]))
         # Place to hold our gradients for backpropagation
-        self.grad = np.ones(self.weights_initializer.shape) 
+        self.grad = np.empty(self.weights_initializer.shape) 
         # Linear output(before passing it through activation function!)
         self.output = np.empty((self.input_tensor.shape[0],units,1)) 
         self.activation_output = np.empty((self.input_tensor.shape[0],
@@ -44,13 +44,17 @@ class Dense(object):
             return self.activation_output
         return None
    
-    def forward(self):
+    def forward(self,actual_tensor):
         ''' Computes output corresponding to the input
         tensor. output = wx + b
         Computes for the whole passed dataset not just for a single
         object, so later we have to manually extracr object from tensors!
+        Actual_tensor - input tensor, self.input_tensor is used only to create
+        matrixes in right dimensions!
         '''
-        for i,sample in enumerate(self.input_tensor):
+        # So i can get this variable in backprop method!
+        self.actual_tensor = actual_tensor
+        for i,sample in enumerate(self.actual_tensor):
             # Here we already have (n,1) matrix in sample variable!
             # Iterate through weight matrix
             new = []
@@ -109,23 +113,33 @@ class Dense(object):
         # If this layer is the last layer in neural network:
         if not isinstance(error,np.ndarray):
             loss_function = loss.MSE()
+            if isinstance(self.activation_function,int):
+                pass
             # Gradient of loss function with respect to its output
             error = loss_function.grad(self.activation_output[i],actual[i])
         # Now we need to calculate gradient of loss function with respect
         # to the weights and store it in self.grad and use it in
         # GRADIENT DESCENT TO UPDATE WEIGHTS OF THIS LAYER!!!!!
-        print(error,'This is our error')
-        print(self.activation_function(self.output[i],derivative=True),'This is AFOD')
-        print(self.input_tensor[i],'This is input tensor ith sample!')
-        self.grad = (np.dot(error, 
+        print(error.shape,'Error shape!')
+        print(error,'VALUE OF ERROR')
+        print(self.output[i],'THIS IS LINEAR OUTPUT ON iTH object')
+        #print(self.activation_function(self.output[i],derivative=True).shape,'This is AFOD')
+        print(self.activation_function(self.output[i],derivative=True),'VALUE OF AFOD')
+        print(self.actual_tensor[i].shape,'This is the only right one TENSOR!@')
+        print(self.actual_tensor[i],'VALUE OF ACTUAL TENSOR')
+        self.grad = ((error.T *
                 self.activation_function(self.output[i],derivative=True)) * 
-                self.input_tensor[i].T)
+                self.actual_tensor[i].T)
+        print(self.grad.shape,'THIS IS GRADIENT!')
+        print(self.grad,'VALUES of gradients')
         # Now we need to calculate gradient of loss function with respect
         # to inputs and pass it to previous layer as a gradient of loss 
         # function with respect to its outputs!
-        gradients_inputs = (np.dot(error, 
-                self.activation_function(self.output[i],derivative=True)) * 
+        gradients_inputs = np.dot((error *
+                self.activation_function(self.output[i],derivative=True).T),
                 self.weights_initializer)
+        print(gradients_inputs.shape,'GRADIENT INPUTS!')
+        print(gradients_inputs,'VALUES of gradient inputs')
         # Passing it to previous layer
         return gradients_inputs
         

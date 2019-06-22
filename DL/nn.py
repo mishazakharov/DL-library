@@ -6,6 +6,22 @@ I don't know if this realizations is appropriate!
 
 import numpy as np
 
+def linear(input_tensor,derivative=False):
+    ''' Linear activation function 
+    If we have linear activation function on a layer
+    partial derivative on activation function with respect
+    to a linear output turns to be ONE.
+    That's why derivative equals 1
+    Formulas:
+            dD/dw = dD/dy * dy/dw = 2 * (y - a) * input_of_layer
+    so in this formula there is no partial derivative of activation function!
+    '''
+    if derivative:
+        return np.array([1])
+    else:
+        return input_tensor
+    return None
+
 
 def sigmoid(input_tensor,derivative=False):
     ''' Sigmoid activation function '''
@@ -27,12 +43,13 @@ def tanh(input_tensor,derivative=False):
 
 def relu(input_tensor,derivative=False):
     ''' Relu activation function '''
+    new_tensor = input_tensor.copy()
     if derivative:
         # Relu derivative equals 1 if x > 0 and 0 if x < 0 
         # in 0 technically derivative is undefined
-        input_tensor[input_tensor > 0] = 1
-        input_tensor[input_tensor <= 0] = 0
-        return input_tensor
+        new_tensor[new_tensor > 0] = 1
+        new_tensor[new_tensor <= 0] = 0
+        return new_tensor 
     else:
         return np.maximum(0,input_tensor)
     return None

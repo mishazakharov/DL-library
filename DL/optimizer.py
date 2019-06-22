@@ -13,7 +13,6 @@ class SGD(object):
         and takes a step of SGD to update weights ot his layer !
         '''
         self.layer.weights_initializer -= self.learning_rate * self.layer.grad
-        print(self.layer.grad,' THis IS gradients')
         
 
 
