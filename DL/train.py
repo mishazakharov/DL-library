@@ -10,12 +10,14 @@ class NeuralNetwork(object):
                 actual - actual y's
                 learning_rate - a speed of gradient descent
                 actual_tensor - input data, like X_train,X_test
+                loss - loss function
     '''
-    def __init__(self,layers,learning_rate=0.01):
+    def __init__(self,layers,loss,learning_rate=0.01):
         # layers is sequence of layers!
         self.layers = layers
         # Learning rate to SGD
         self.learning_rate = learning_rate
+        self.loss = loss
 
     def forward(self,actual_tensor):
         ''' Forward propagation '''
@@ -34,7 +36,7 @@ class NeuralNetwork(object):
         # for stochastic gradient descent
         i = random.randint(0,actual.shape[0]-1)
         for layer in reversed(self.layers):
-            error = layer.backward(i,error,actual)
+            error = layer.backward(i,error,actual,self.loss)
             # Updating weights
             optim = optimizer.SGD(layer,self.learning_rate)
             optim.step()

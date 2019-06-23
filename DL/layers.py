@@ -1,6 +1,7 @@
 import numpy as np
 import nn
 import loss
+import math
 
 class Dense(object):
     ''' Dense layer. It just computes weighted summ of inputs
@@ -10,6 +11,7 @@ class Dense(object):
                                         weights_initializer=''):
         ''' As input __init__ receives input_tensor(M x N x 1),
         so every object in input_data is (n,1) matrix
+        Default initialization - Xavier weights initialization!
         '''
         # Creating weights matrix for current layer
         # m x n , where m - number of units in the previous layer and
@@ -21,7 +23,10 @@ class Dense(object):
         self.activation_function = activation_function
         if self.weights_initializer == 'he':
             pass
-        self.weights_initializer = np.ones((units,self.input_tensor.shape[1]))
+        # Formula of Xavier initialization!
+        xavier = math.sqrt(2 / (self.input_tensor.shape[0] + self.units))
+        # With xavier initalization needed more epochs to converge!
+        self.weights_initializer = np.full((units,self.input_tensor.shape[1]),xavier)
         # Place to hold our gradients for backpropagation
         self.grad = np.empty(self.weights_initializer.shape) 
         # Linear output(before passing it through activation function!)
@@ -83,7 +88,7 @@ class Dense(object):
             return self.activation_output
         return None
 
-    def backward(self,i,gradient=None,actual=None):
+    def backward(self,i,gradient=None,actual=None,loss=None):
         ''' 
         --
         [i] means that i am extracting ith object from tensor due to 
@@ -112,7 +117,7 @@ class Dense(object):
         error = gradient
         # If this layer is the last layer in neural network:
         if not isinstance(error,np.ndarray):
-            loss_function = loss.MSE()
+            loss_function = loss
             if isinstance(self.activation_function,int):
                 pass
             # Gradient of loss function with respect to its output
