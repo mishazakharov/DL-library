@@ -37,5 +37,6 @@ class CrossEntropy(object):
             return -(1/predicted.shape[0]) * np.sum(np.log((1 - predicted)+1e-9))
 
     def grad(self,predicted,actual):
+        # I am not sure about this realization !!!
         return predicted - actual
         

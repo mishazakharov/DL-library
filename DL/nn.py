@@ -24,9 +24,13 @@ def linear(input_tensor,derivative=False):
 
 
 def sigmoid(input_tensor,derivative=False):
-    ''' Sigmoid activation function '''
+    ''' Sigmoid activation function 
+    Formulas:
+            s(x) = 1 / 1 + exp(-x)
+            s'(x) = s(x) * (1 - s(x))
+    '''
     if derivative:
-        return input_tensor * (1 - input_tensor)
+        return sigmoid(input_tensor) * (1 - sigmoid(input_tensor))
     else:
         return 1 / (1 + np.exp(-input_tensor))
     return None
@@ -68,13 +72,19 @@ def elu(input_tensor,derivative=False,alpha=0.01):
     return None
 
 def softmax(input_tensor,derivative=False):
-    ''' Softmax activation function '''
+    ''' Softmax activation function 
+    Info: https://ru.wikipedia.org/wiki/Softmax
+    '''
     if derivative:
-        # I have not realized it yet!
-        pass
+        # I am not sure about this realization!
+        result = (softmax(inpu_tensor,derivative=False) * 
+                        (1 - softmax(input_tensor,derivative=False)))
+        return result
     else:
+        # Numerically more stable version of softmax activation function is
+        # not just np.exp(input_tensor) but this...
         e_x = np.exp(input_tensor - np.max(input_tensor))
-        return e_x / e_x.sum(axis=0)
+        return e_x / np.sum(e_x) 
     return None 
 
 
