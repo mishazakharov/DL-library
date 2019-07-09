@@ -9,3 +9,12 @@ The main goal of the project is to get some expirience in building libraries and
 understand everything much better and basically **Learn**.
 
 I repeat, this idea is used **exclusively** for *educational purposes*.
+
+<h2>Table of Content</h2>
+
+1. [layers.py](https://github.com/mishazakharov/DL-library/blob/master/DL/layers.py)
+  * Dense
+2. [loss.py](https://github.com/mishazakharov/DL-library/blob/master/DL/loss.py)
+  * Mean Squared Error
+  * Cross Entropy
+3.
