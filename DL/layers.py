@@ -4,9 +4,19 @@ import loss
 import math
 
 class Dense(object):
-    ''' Dense layer. It just computes weighted summ of inputs
-        I have to realize multi-sample inputs
-    '''
+    """ This class builds a single dense layer
+    
+    Dense layer is basically just an object that computes 
+    weighted summ of inputs and passes it through a activational
+    function, which you can choose
+
+    Args:
+        input_tensor(np.ndarray): input data/training data
+        units(int): number of neurons in a layer
+        activation_function(object): activation function used in a layer
+        weights_initializer(str): type of weights initializer
+
+    """
     def __init__(self,input_tensor,units,activation_function='',
                                         weights_initializer=''):
         ''' As input __init__ receives input_tensor(M x N x 1),
@@ -89,7 +99,7 @@ class Dense(object):
         return None
 
     def backward(self,i,gradient=None,actual=None,loss=None):
-        ''' 
+        """
         --
         [i] means that i am extracting ith object from tensor due to 
         specifics of this realization!
@@ -109,11 +119,13 @@ class Dense(object):
         If this method doesn't recieve anything -> grad=None, then
         this layer is the last one and it computes MSE on outputs
         Else it just receives grads and follows the algorithm!
-        Variables: 
+
+        Variables:
                 errors = gradient of L with respect to outputs
                 self.grad = gradient of L with respect to weights
                 gradient_inputs = gradient of L with respect to inputs
-        '''
+
+        """
         error = gradient
         # If this layer is the last layer in neural network:
         if not isinstance(error,np.ndarray):
@@ -125,34 +137,34 @@ class Dense(object):
         # Now we need to calculate gradient of loss function with respect
         # to the weights and store it in self.grad and use it in
         # GRADIENT DESCENT TO UPDATE WEIGHTS OF THIS LAYER!!!!!
-        print(error.shape,'Error shape!')
-        print(error,'VALUE OF ERROR')
-        print(self.output[i],'THIS IS LINEAR OUTPUT ON iTH object')
+        #print(error.shape,'Error shape!')
+        #print(error,'VALUE OF ERROR')
+        #print(self.output[i],'THIS IS LINEAR OUTPUT ON iTH object')
         #print(self.activation_function(self.output[i],derivative=True).shape,'This is AFOD')
-        print(self.activation_function(self.output[i],derivative=True),'VALUE OF AFOD')
-        print(self.actual_tensor[i].shape,'This is the only right one TENSOR!@')
-        print(self.actual_tensor[i],'VALUE OF ACTUAL TENSOR')
+        #print(self.activation_function(self.output[i],derivative=True),'VALUE OF AFOD')
+        #print(self.actual_tensor[i].shape,'This is the only right one TENSOR!@')
+        #print(self.actual_tensor[i],'VALUE OF ACTUAL TENSOR')
         self.grad = ((error.T *
                 self.activation_function(self.output[i],derivative=True)) * 
                 self.actual_tensor[i].T)
-        print(self.grad.shape,'THIS IS GRADIENT!')
-        print(self.grad,'VALUES of gradients')
+        #print(self.grad.shape,'THIS IS GRADIENT!')
+        #print(self.grad,'VALUES of gradients')
         # Now we need to calculate gradient of loss function with respect
         # to inputs and pass it to previous layer as a gradient of loss 
         # function with respect to its outputs!
         gradients_inputs = np.dot((error *
                 self.activation_function(self.output[i],derivative=True).T),
                 self.weights_initializer)
-        print(gradients_inputs.shape,'GRADIENT INPUTS!')
-        print(gradients_inputs,'VALUES of gradient inputs')
+        #print(gradients_inputs.shape,'GRADIENT INPUTS!')
+        #print(gradients_inputs,'VALUES of gradient inputs')
         # Passing it to previous layer
         return gradients_inputs
         
     def forward_random(self,new_input_tensor):
-        '''
+        """
         Does forward propagation on a new tensor
         Will change it later
-        '''
+        """
         new_result = np.empty((new_input_tensor.shape[0],self.units,1))
         for i,sample in enumerate(new_input_tensor):
             new = []

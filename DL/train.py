@@ -3,15 +3,15 @@ import optimizer
 import random
 
 class NeuralNetwork(object):
-    ''' This class assembles an engine and trains
+    """ This class assembles an engine and trains
     our neural network by backpropogating
-    Variables:
-                layers - sequence of layers in NN
-                actual - actual y's
-                learning_rate - a speed of gradient descent
-                actual_tensor - input data, like X_train,X_test
-                loss - loss function
-    '''
+
+    Args:
+        layers(list): sequence of layers in NN
+        learning_rate(float): a speed of gradient descent
+        loss(object): loss function
+
+    """ 
     def __init__(self,layers,loss,learning_rate=0.01):
         # layers is sequence of layers!
         self.layers = layers
@@ -20,7 +20,12 @@ class NeuralNetwork(object):
         self.loss = loss
 
     def forward(self,actual_tensor):
-        ''' Forward propagation '''
+        """ Forward progapation
+
+        Args:
+            actual_tensor - input data, like X_train,X_test
+            
+        """
         result = actual_tensor
         # for every layer in layers
         for layer in self.layers:
@@ -29,7 +34,12 @@ class NeuralNetwork(object):
         return result
 
     def backward(self,actual):
-        ''' Backward propagation '''
+        """ Backward propagation
+
+        Args:
+            actual(np.ndarray): actual y's, right lables
+
+        """
         # for every layer reversed we backpropagate
         error = None
         # Radnoming i for extracting ith sample from tenosr
@@ -48,8 +58,8 @@ class NeuralNetwork(object):
         return result
 
     def train(self,actual_tensor,actual,epochs):
-        ''' Trains NN '''
+        """ Trains our NN
+        """
         for i in range(epochs):
             self.forward(actual_tensor)
             self.backward(actual)
-

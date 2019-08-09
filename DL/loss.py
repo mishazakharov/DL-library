@@ -7,7 +7,11 @@ import numpy as np
 
 
 class MSE(object):
-    ''' MSE error '''
+    """ This class realizes MSE loss function
+
+    MSE stands for mean squared error. Commonly used in regression tasks
+
+    """
     def loss(self,predicted,actual):
         # Computes a loss function between two tensors!
         return np.sum((predicted - actual)**2)
@@ -18,16 +22,18 @@ class MSE(object):
 
 
 class CrossEntropy(object):
-    ''' Cross entropy cost function 
+    """ This class realizes cross entropy loss function
+
     Formula:
             L = -1/n * E(x)[y*log(a) + (1 - y)*log(1-a)], where
             n - number of samples in the training data,
             E(x)[] - sum over x training inputs(attributes),
             y - corresponding desired output
+
     Derivative:
             D' = y - a
             might be wrong!
-    '''
+    """
 
     def loss(self,predicted,actual):
         if actual == 1:
@@ -37,6 +43,6 @@ class CrossEntropy(object):
             return -(1/predicted.shape[0]) * np.sum(np.log((1 - predicted)+1e-9))
 
     def grad(self,predicted,actual):
-        # I am not sure about this realization !!!
-        return predicted - actual
+        # Seems like this one is a bit more accurate realization!
+        return (-actual/predicted) + (1 - actual)/(1 - predicted)
         

@@ -32,7 +32,7 @@ X_test = tensor(X_test)
 
 layer1 = Dense(X_train,3,activation_function=nn.relu)
 layer2 = Dense(layer1(),2,activation_function=nn.relu)
-layer3 = Dense(layer2(),1,activation_function=nn.relu)
+layer3 = Dense(layer2(),1,activation_function=nn.linear)
 list_of_layers = [layer1,layer2,layer3]
 lr = 0.015
 assembler = train.NeuralNetwork(list_of_layers,loss.MSE())
@@ -47,7 +47,7 @@ for epoch in range(n_epochs):
     print(assembler.layers[0].weights_initializer,'Weights')
     print(assembler.layers[1].weights_initializer,'2nd layer')
 '''
-assembler.train(X_train,y_train,1000)
+assembler.train(X_train,y_train,500)
 
 # On this step we have working neural network with 
 # good updated weights and its ready to make predictions
